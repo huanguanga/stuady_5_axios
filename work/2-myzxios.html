@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button onclick="testGet()">发送GET请求</button><br>
+  <button onclick="testPost()">发送POST请求</button><br>
+  <button onclick="testPut()">发送PUT请求</button><br>
+  <button onclick="testDelete()">发送Delete请求</button><br>
+  <!-- <script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script> -->
+  <!-- 自定义axios函数对象 -->
+  <script>
+    function axios({
+      url,
+      method,
+      // params中的参数会放到url中 query参数
+      params={},
+      //data中的参数会放到请求体中 请求体参数
+      data= {}
+    }) {
+      return new Promise((resolve, reject) => {
+        // 此处代码用来将params对象总的数据生成query参数字符串
+        let queryStr = ''
+        Object.keys(params).forEach(key => {
+          queryStr += `&${key}=${params[key]}`
+        })
+        if (queryStr !== '') {
+          queryStr = queryStr.substring(1)
+          url += '?' + queryStr
+        }
+        // 
+        const xhr = new XMLHttpRequest()
+        xhr.open(method,url,true)
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState !== 4) return
+          const status = xhr.status
+          if (status >= 200 && status < 300) {
+            const data = xhr.response //此处是一个JSON文本
+            const response = {
+              data: JSON.parse(data),
+              status
+            }
+            resolve(response)
+          } else {
+            reject(new Error('request error,status is ' + status))
+          }
+        }
+        // 此处要依据请求方式来确定要不要传请求体参数
+        if (method === 'GET') {//get需要传请求体参数
+          xhr.send()
+        }else{//post,put,delete不需要
+          xhr.setRequestHeader('Content-Type','application/json;charset=utf-8')
+          xhr.send(JSON.stringify(data))
+        }
+      })
+    }
+  </script>
+  <!-- 测试axios -->
+  <script>
+    function testGet() {
+      axios({
+        url: 'http://localhost:3000/posts',
+        method: 'GET',
+        data: {
+          id: 1
+        }
+      })
+    }
+
+    function testPost() {
+      axios({
+        url: 'http://localhost:3000/posts',
+        method: 'POST',
+        data: {
+          title: 'two-api',
+          author: 'huanguang',
+        }
+      })
+    }
+
+    function testPut() {
+      axios({
+        url: 'http://localhost:3000/posts/2',
+        method: 'PUT',
+        data: {
+          title: 'this two api',
+        }
+      })
+    }
+
+    function testDelete() {
+      axios({
+        url: 'http://localhost:3000/posts/2',
+        method: 'DELETE',
+      })
+    }
+  </script>
+
+</body>
+
+</html>

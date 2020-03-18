@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button onclick="testGet()">发送GET请求</button><br>
+  <button onclick="testPost()">发送POST请求</button><br>
+  <button onclick="testPut()">发送PUT请求</button><br>
+  <button onclick="testDelete()">发送Delete请求</button><br>
+  <script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
+  <script>
+      function testGet(){
+        axios({
+          url : 'http://localhost:3000/posts',
+          method:'GET',
+          data :{
+            id: 1
+          }
+        })
+      }
+      function testPost(){
+        axios({
+          url : 'http://localhost:3000/posts',
+          method:'POST',
+          data:{
+            title:'two-api',
+            author:'huanguang',
+          }
+        })
+      }
+      function testPut(){
+        axios({
+          url : 'http://localhost:3000/posts/2',
+          method:'PUT',
+          data:{
+            title:'this two api',
+          }
+        })
+      }
+      function testDelete(){
+        axios({
+          url : 'http://localhost:3000/posts/2',
+          method:'DELETE',
+        })
+      }
+  </script>
+</body>
+</html>
