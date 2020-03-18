@@ -37,7 +37,7 @@
         const xhr = new XMLHttpRequest()
         xhr.open(method,url,true)
         xhr.onreadystatechange = function () {
-          if (xhr.readyState !== 4) return
+          if (xhr.readyState !== 4)  return
           const status = xhr.status
           if (status >= 200 && status < 300) {
             const data = xhr.response //此处是一个JSON文本
