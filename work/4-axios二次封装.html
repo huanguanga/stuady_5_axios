@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.bootcss.com/nprogress/0.2.0/nprogress.css" rel="stylesheet">
+</head>
+
+<body>
+  <div>
+    <button onclick="getUsers()">获取用户列表</button>
+    <button onclick="getRepos()">获取仓库列表</button>
+  </div>
+  <script src="https://cdn.bootcss.com/axios/0.19.0/axios.js"></script>
+  <script src="https://cdn.bootcss.com/nprogress/0.2.0/nprogress.js"></script>
+  
+  <script>
+    // 配置路径/超时时间等
+    // axios.defaults.baseURL = 'https://api.github.com'
+    // axios.defaults.timeout = 20000 //请求连接超时时间
+    //用axios的create方法
+    const service =  axios.create({
+      baseURL:'https://api.github.com',
+      timeout:2000
+    })
+    //添请求拦截器
+    service.interceptors.request.use((config) => {
+      //请求过程中的loading提示(此处用到一个库)
+      NProgress.start() //显示loading状态
+      // 请求携带token数据(token为后台返回给前台的身份标识字符串)
+      const token = '1'
+      if (token) {
+        config.headers.token = token //token属性名是接口文档指定的
+      }
+      //返回config
+      return config
+    })
+
+
+
+    //添加响应拦截器
+    service.interceptors.response.use((response) => {
+      //得到响应,loading状态隐藏
+      NProgress.done()
+      return response.data
+    }, error => {
+      //得到响应,loading状态隐藏
+      NProgress.done()
+
+      // 此处失败的返回值有两种情况
+      // 第一种为后面的请求完全不用再处理错误,此时直接返回一个pending状态的promise
+      return new Promise(()=>{})
+      // 第二种为错位会传递给链的下一级,此时可以返回一个失败的promise或者throw错误
+      // return Promise.reject(error)
+      // throw error
+    })
+  </script>
+
+
+
+  <!-- 点击发送请求 -->
+  <script>
+    function getUsers() {
+      service.get('/search/users', {
+          params: {
+            q: 'a'
+          }
+        })
+        .then(value => {
+          console.log(value);
+        })
+        .catch(error => {
+          console.log('请求出错' + error.message);
+
+        })
+    };
+
+    function getRepos() {
+      service.get('/search/repositories', {
+          params: {
+            q: 'r',
+            'sort': 'stars'
+          }
+        })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(error => {
+          console.log('请求仓库出错' + error.message)
+        })
+    }
+  </script>
+</body>
+
+</html>
